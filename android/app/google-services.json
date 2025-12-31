@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "546585126869",
+    "project_id": "qudwa-2d66a",
+    "storage_bucket": "qudwa-2d66a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546585126869:android:7f018ef78d982314807f5c",
+        "android_client_info": {
+          "package_name": "com.atifiy.qudwa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546585126869-8gmrdhi2bm35dr5lml10l68r7ue01jn9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.atifiy.qudwa",
+            "certificate_hash": "0ab799e9ce29dc8e6db5d9e39767ffcb788cd610"
+          }
+        },
+        {
+          "client_id": "546585126869-tlreqvg8rvr9h96mkru5poo0ketmab2u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.atifiy.qudwa",
+            "certificate_hash": "e32f00b6c0402524f04db76aaf6f36678c750180"
+          }
+        },
+        {
+          "client_id": "546585126869-7sgbjesfpjirtebar7brvpj7ghn5oj30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDStazq-kPAK_Rp5u-Q9gBGJPFPjKvwkPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546585126869-7sgbjesfpjirtebar7brvpj7ghn5oj30.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "546585126869-876q614s3adao6vl5d66bch4hnu3ddi5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.atifiy.qudwa"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546585126869:android:0502a02e65aa73af807f5c",
+        "android_client_info": {
+          "package_name": "com.example.qudwa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546585126869-7sgbjesfpjirtebar7brvpj7ghn5oj30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDStazq-kPAK_Rp5u-Q9gBGJPFPjKvwkPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546585126869-7sgbjesfpjirtebar7brvpj7ghn5oj30.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "546585126869-876q614s3adao6vl5d66bch4hnu3ddi5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.atifiy.qudwa"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

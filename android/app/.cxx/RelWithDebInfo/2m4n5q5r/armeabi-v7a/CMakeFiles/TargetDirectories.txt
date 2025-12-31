@@ -1,0 +1,2 @@
+C:/Users/tayyu/StudioProjects/qudwa/android/app/.cxx/RelWithDebInfo/2m4n5q5r/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/tayyu/StudioProjects/qudwa/android/app/.cxx/RelWithDebInfo/2m4n5q5r/armeabi-v7a/CMakeFiles/rebuild_cache.dir

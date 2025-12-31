@@ -1,0 +1,46 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IDEs
+*.iml
+*.ipr
+*.iws
+.idea/
+/.vscode/
+
+# Flutter/Dart
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+.env
+
+# Android specific
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Sensitive files (local paths)
+C:/Users/tayyu/StudioProjects/qudwa/android/app/google-services.json
+C:/Users/tayyu/StudioProjects/qudwa/upload-keystore.jks
+C:/Users/tayyu/StudioProjects/qudwa/upload_certificate.pem
+C:/Users/tayyu/StudioProjects/qudwa/firebase.json
+C:/Users/tayyu/StudioProjects/qudwa/android/app/release-key.jks
+
+# Obfuscation / Symbolication
+app.*.symbols
+app.*.map.json
+*.secrets.json
