@@ -1,10 +1,10 @@
-# Qudwa - AI-Powered Quranic Assistant & Reader
+# Alkitab - AI-Powered Quranic Assistant & Reader
 
-Qudwa is a premier Quranic application that blends traditional religious scholarship with modern Artificial Intelligence. Designed to be more than just a digital reader, Qudwa serves as an interactive companion, providing users with AI-driven insights, multi-translation research tools, and a premium audio experience for spiritual growth.
+Alkitab is a premier Quranic application that blends traditional religious scholarship with modern Artificial Intelligence. Designed to be more than just a digital reader, Alkitab serves as an interactive companion, providing users with AI-driven insights, multi-translation research tools, and a premium audio experience for spiritual growth.
 
 ## 🚀 Introduction
 
-Qudwa (meaning "Example" or "Role Model") is built to bring the wisdom of the Quran closer to users through an advanced AI ChatBot. By integrating Google's Gemini AI, the app allows users to "research" and ask questions about the Quranic text, receiving grounded and scholarly-focused responses. Alongside its AI capabilities, Qudwa offers a high-fidelity reading interface with support for multiple classical Arabic scripts and high-quality audio recitations.
+Alkitab (meaning "Book") is built to bring the wisdom of the Quran closer to users through an advanced AI ChatBot. By integrating Google's Gemini AI, the app allows users to "research" and ask questions about the Quranic text, receiving grounded and scholarly-focused responses. Alongside its AI capabilities, Alkitab offers a high-fidelity reading interface with support for multiple classical Arabic scripts and high-quality audio recitations.
 
 ## 🛠 Tech Stack
 
@@ -34,7 +34,7 @@ Qudwa (meaning "Example" or "Role Model") is built to bring the wisdom of the Qu
 
 ## 📂 Architecture
 
-Qudwa utilizes a **Reactive Layered Architecture**:
+Alkitab utilizes a **Reactive Layered Architecture**:
 - `features`: Domain modules including Quran Reader, Onboarding, and Settings.
 - `viewmodels`: Business logic layer powered by Riverpod and custom logic hubs.
 - `data`: Repositories and local database (Drift) implementations.

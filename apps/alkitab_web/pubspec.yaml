@@ -1,0 +1,123 @@
+name: alkitab_web
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # --- SHARED PACKAGES ---
+  alkitab_ui:
+    path: ../../packages/alkitab_ui
+  alkitab_core:
+    path: ../../packages/alkitab_core
+  alkitab_models:
+    path: ../../packages/alkitab_models
+  alkitab_quran:
+    path: ../../packages/features/alkitab_quran
+
+  # --- CORE UTILS & UI ---
+  http: ^1.2.0
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.3
+  go_router: ^14.6.2
+  url_launcher: ^6.3.1
+  url_strategy: ^0.3.0
+  flutter_svg: ^2.2.3
+  icons_plus: ^5.0.0
+  google_fonts: ^8.0.0
+  
+  # --- LOGGING & UTILS ---
+  logger: ^2.4.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.7.1
+  riverpod_generator: ^3.0.3
+  melos: ^6.3.1
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/svgs/
+    - assets/blue.png
+    - assets/qudwa_logo.png
+    # Ensure these paths are valid in web or copied locally if needed. 
+    # For now assuming Melos/Flutter handles package assets or we'll need to copy them.
+    # Note: Accessing assets from other packages might require 'package:alkitab_ui/...'
+
+  fonts:
+    # 1. Quran Font (PDMS Saleem)
+    - family: quranfont
+      fonts:
+        - asset: assets/QuranFont/font.ttf
+
+    # 2. Poppins (Headings)
+    - family: Poppins
+      fonts:
+        - asset: assets/Poppins/Poppins-Regular.ttf
+        - asset: assets/Poppins/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/Poppins/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/Poppins/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/Poppins/Poppins-Italic.ttf
+          style: italic
+    - family: Amiri
+      fonts:
+        - asset: assets/Amiri/Amiri-Regular.ttf
+
+
+    # 3. Lato (Body Text)
+    - family: Lato
+      fonts:
+        - asset: assets/Lato/Lato-Regular.ttf
+        - asset: assets/Lato/Lato-Bold.ttf
+          weight: 700
+        - asset: assets/Lato/Lato-Italic.ttf
+          style: italic
+
+    # 4. Libre Baskerville (Translations)
+    - family: LibreBaskerville
+      fonts:
+        - asset: assets/Libre_Baskerville/static/LibreBaskerville-Regular.ttf
+        - asset: assets/Libre_Baskerville/static/LibreBaskerville-Bold.ttf
+          weight: 700
+        - asset: assets/Libre_Baskerville/static/LibreBaskerville-Italic.ttf
+          style: italic
+
+    # 5. Gulzar (Urdu)
+    - family: Gulzar
+      fonts:
+        - asset: assets/Gulzar/Gulzar-Regular.ttf
+
+    # 6. Gentium Plus (Transliteration)
+    - family: GentiumPlus
+      fonts:
+        - asset: assets/Gentium_Plus/GentiumPlus-Regular.ttf
+        - asset: assets/Gentium_Plus/GentiumPlus-Italic.ttf
+          style: italic
+        - asset: assets/Gentium_Plus/GentiumPlus-Bold.ttf
+          weight: 700
+
+    # 7. GT Super Text Book (Headings/Titles)
+    - family: GT-Super-Text-Book
+      fonts:
+        - asset: assets/GT_Super/GT-Super-Text-Book.ttf
+    # 8. Noto Naskh Arabic
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/Noto_Naskh_Arabic/NotoNaskhArabic-VariableFont_wght.ttf

@@ -1,0 +1,32 @@
+name: alkitab_quran
+description: Quran Feature (UI + Logic).
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.3
+  alkitab_core:
+    path: ../../alkitab_core
+  alkitab_models:
+    path: ../../alkitab_models
+  alkitab_ui:
+    path: ../../alkitab_ui
+  icons_plus: ^5.0.0 # UI dependency
+  scrollable_positioned_list: ^0.3.8
+  flutter_svg: ^2.0.10
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  google_fonts: ^8.0.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  build_runner: ^2.7.1
+  riverpod_generator: ^3.0.3
+  freezed: ^3.2.3
+  json_serializable: ^6.11.2

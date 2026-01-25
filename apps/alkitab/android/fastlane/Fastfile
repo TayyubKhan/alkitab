@@ -1,0 +1,12 @@
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests, security checks, and build"
+  lane :build do
+    # Run tests via Melos
+    sh("cd ../.. && flutter pub run melos run test")
+    
+    # Build APK
+    gradle(task: "assembleRelease")
+  end
+end

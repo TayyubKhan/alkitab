@@ -1,0 +1,26 @@
+name: alkitab_core
+description: Core abstractions and shared logic.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.0.3
+  riverpod_annotation: ^3.0.0
+  alkitab_models:
+    path: ../alkitab_models
+  just_audio: ^0.10.5
+  shared_preferences: ^2.5.3
+  path_provider: ^2.1.5
+  drift: ^2.24.2 # For Drift Value if needed in Core or just Abstractions
+  connectivity_plus: ^7.0.0 # For DownloadVM check
+  groq: ^1.1.1
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^3.0.0

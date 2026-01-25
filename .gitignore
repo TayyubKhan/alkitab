@@ -44,3 +44,4 @@ C:/Users/tayyu/StudioProjects/qudwa/android/app/release-key.jks
 app.*.symbols
 app.*.map.json
 *.secrets.json
+secrets.json

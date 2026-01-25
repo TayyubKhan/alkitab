@@ -1,0 +1,12 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Runs all the tests, security checks, and build"
+  lane :build do
+    # Run tests via Melos
+    sh("cd ../.. && flutter pub run melos run test")
+    
+    # Build IPA (Simulated for CI without signing)
+    build_app(workspace: "Runner.xcworkspace", scheme: "Runner", clean: true, include_bitcode: false, export_method: "ad-hoc", skip_codesigning: true)
+  end
+end

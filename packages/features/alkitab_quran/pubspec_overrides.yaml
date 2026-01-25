@@ -1,0 +1,8 @@
+# melos_managed_dependency_overrides: alkitab_core,alkitab_models,alkitab_ui
+dependency_overrides:
+  alkitab_core:
+    path: ..\\..\\alkitab_core
+  alkitab_models:
+    path: ..\\..\\alkitab_models
+  alkitab_ui:
+    path: ..\\..\\alkitab_ui

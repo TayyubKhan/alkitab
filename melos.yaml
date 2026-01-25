@@ -1,0 +1,44 @@
+name: alkitab
+
+packages:
+  - .
+  - apps/*
+  - packages/*
+  - packages/features/*
+
+scripts:
+  analyze:
+    run: flutter analyze .
+    description: Run flutter analyze.
+  
+  format:
+    run: dart format . --fix
+    description: Run dart format with fix.
+
+  gen:
+    run: flutter pub run build_runner build --delete-conflicting-outputs
+    description: Run build_runner to generate code.
+
+  gen:l10n:
+    run: flutter gen-l10n
+    description: Generate localization files.
+  
+  gen:watch:
+    run: flutter pub run build_runner watch --delete-conflicting-outputs
+    description: Run build_runner in watch mode.
+
+  test:
+    run: flutter test
+    description: Run flutter tests.
+
+  clean:
+    run: flutter clean
+    description: Clean the project.
+
+  run:web:html:
+    run: cd apps/alkitab_web && flutter run -d chrome
+    description: Run web app.
+
+  run:web:canvaskit:
+    run: cd apps/alkitab_web && flutter run -d chrome
+    description: Run web app.
