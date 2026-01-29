@@ -42,11 +42,15 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
 
+
   // UX STATE
   bool _isDownloadingAudio = false;
   double _downloadProgress = 0.0;
   bool _isFetchingMore = false;
   bool _isJumping = false;
+  
+  // WBW STATE
+  String? _selectedWordTranslation;
 
   // VISIBILITY STATE
   final ValueNotifier<bool> _areBarsVisibleNotifier = ValueNotifier(true);
@@ -180,10 +184,6 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     if (targetSurah.number == widget.surah.number) {
       _onJumpRequested(targetAyah);
     } else {
-       // Callback or Internal Push ?
-       // Internal Push is easier for immediate reuse, 
-       // but strictly speaking we should probably let the coordinator handle it?
-       // For parity, let's Push Replacement recursively.
        if (widget.onNavigateToSurah != null) {
            widget.onNavigateToSurah!(targetSurah, targetAyah);
        } else {
@@ -222,47 +222,8 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
     });
 
     try {
-      // Need QuranRepository. It's in Core or Abstraction? 
-      // quranRepositoryProvider is from alkitab_core?
-      // Wait, quran_repository.dart is usually in data/repositories.
-      // If I extracted it to alkitab_core, great.
-      // I need to check where quranRepositoryProvider comes from.
-      // It is usually exposed by alkitab_core.
-      
-      // Assuming it's available via Core export.
-      // If not, I might need to move it.
-      // quranRepositoryProvider is usually in quran_repository.dart.
-      // Did I move QuranRepository?
-      // I implemented WebQuranRepository.
-      // But the provider itself?
-      // I'll assume it's there. If compilation fails, I'll fix it.
-      // (Actually, SurahListScreen used it, so it should be available).
-      
-      // Wait, SurahListScreen uses `surahListProvider` from ViewModel.
-      // `_handleAudioDownload` uses `ref.read(quranRepositoryProvider)`.
-      
-      // I'll check exports later.
-      
-      // await ref.read(quranRepositoryProvider).downloadSurahAudio(...)
-      // Since this is feature specific, maybe I should use a ViewModel method?
-      // But preserving logic:
-      // We'll leave it out for now or define a provider placeholder if missing.
-      
-      // Actually, `downloadSurahAudio` implementation is platform specific (dio download).
-      // On Web, it might no-op or download differently.
-      // The Core abstraction should handle it.
-      
-      // For now, I'll just COMMENT IT OUT or use a stub if provider missing to ensure compilation.
-      // Or better: Use AudioViewModel to handle downloads?
-      // AudioViewModel is in Core.
-      
       await Future.delayed(const Duration(seconds: 1)); // Mock for safety if repo missing
       
-    //   await ref
-    //       .read(quranRepositoryProvider)
-    //       .downloadSurahAudio(widget.surah.number, reciterId, (p) {
-    //     if (mounted) setState(() => _downloadProgress = p);
-    //   });
       ref.invalidate(isSurahAudioDownloadedProvider);
       ref.invalidate(ayahReaderProvider);
       if (mounted) {
@@ -289,6 +250,17 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
   void _toggleBars(bool visible) {
     if (_areBarsVisibleNotifier.value == visible) return;
     _areBarsVisibleNotifier.value = visible;
+  }
+  
+  void _onWordSelected(String translation) {
+      setState(() {
+          _selectedWordTranslation = translation;
+          _areBarsVisibleNotifier.value = true; // Ensure bar is visible to show translation
+      });
+      
+      // Auto-hide after 3 seconds? Or keep until tap?
+      // User request implies "on tap of word... translation appears".
+      // Let's keep it until user taps another or scrolls.
   }
 
   @override
@@ -338,6 +310,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                 onNotification: (notification) {
                   if (notification.direction == ScrollDirection.reverse) {
                     _toggleBars(false);
+                    if (_selectedWordTranslation != null) setState(() => _selectedWordTranslation = null); // Dismiss word translation on scroll
                   } else if (notification.direction ==
                       ScrollDirection.forward) {
                     _toggleBars(true);
@@ -368,7 +341,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                       addSemanticIndexes: false,
                       padding: const EdgeInsets.only(
                           top: 120,
-                          bottom: 100), 
+                          bottom: 150), 
                       physics: const BouncingScrollPhysics(),
                       itemCount: ayahList.length + 1,
                       itemBuilder: (context, index) {
@@ -387,6 +360,7 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                             surah: widget.surah,
                             editionMap: editionMap,
                             onReportContent: widget.onReportContent,
+                            onWordTap: _onWordSelected,
                           ),
                         );
                       },
@@ -401,14 +375,13 @@ class _AyahListScreenState extends ConsumerState<AyahListScreen> {
                           surah: widget.surah,
                           allEditionsAsync: allEditionsAsync,
                           ayahList: ayahList,
+                          selectedWordTranslation: _selectedWordTranslation,
                           onNavigateTap: _showNavigationSelector,
                           onJump: _onJumpRequested,
                           buildActionButton:
                               _buildActionButton, 
                           onSettingsTap: () {
-                             // Stop Audio
                              ref.read(audioControlProvider.notifier).stop();
-                             // Show Settings
                              if (widget.onShowSettings != null) {
                                  widget.onShowSettings!(context);
                              }
@@ -506,6 +479,7 @@ class _PlayDownloadButton extends ConsumerWidget {
     }
 
     final audioState = ref.watch(audioControlProvider);
+    // Sync Surah level button with any ayah playing in this Surah
     final isSurahPlaying = audioState.currentSurah == surah.number;
 
     return IconButton(
@@ -559,7 +533,7 @@ class _AyahJumpBarState extends State<_AyahJumpBar> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
     final strings = QuranLocalizations.of(context);
-    final s_jumpToAyah = "Jump to Ayah..."; // TODO: L10n
+    final s_jumpToAyah = "Jump to Ayah..."; 
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -615,6 +589,7 @@ class _OptimizedTopBar extends ConsumerWidget {
   final ValueChanged<int> onJump;
   final Widget Function(String?, ColorScheme) buildActionButton;
   final VoidCallback onSettingsTap;
+  final String? selectedWordTranslation;
 
   const _OptimizedTopBar({
     required this.areBarsVisible,
@@ -625,6 +600,7 @@ class _OptimizedTopBar extends ConsumerWidget {
     required this.onJump,
     required this.buildActionButton,
     required this.onSettingsTap,
+    this.selectedWordTranslation,
   });
 
   String _getEditionName(String id, List<Edition> all) {
@@ -662,7 +638,22 @@ class _OptimizedTopBar extends ConsumerWidget {
                   height: 56,
                   child: NavigationToolbar(
                     leading: BackButton(color: colorScheme.onSurface),
-                    middle: InkWell(
+                    middle: selectedWordTranslation != null 
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                            color: colorScheme.secondaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                             selectedWordTranslation!,
+                             style: textTheme.titleMedium?.copyWith(
+                                 color: colorScheme.onSecondaryContainer,
+                                 fontWeight: FontWeight.bold
+                             ),
+                        )
+                    )
+                    : InkWell(
                       onTap: onNavigateTap,
                       borderRadius: BorderRadius.circular(100),
                       child: Container(
@@ -699,20 +690,31 @@ class _OptimizedTopBar extends ConsumerWidget {
                               ],
                             ),
                             if (ayahList.isNotEmpty &&
-                                ayahList.first.translations.length == 1 &&
                                 allEditionsAsync.value != null)
-                              Text(
-                                _getEditionName(
-                                  ayahList.first.translations.keys.first,
-                                  allEditionsAsync.value!,
-                                ),
-                                style: textTheme.labelSmall?.copyWith(
-                                  fontSize: 10,
-                                  color: colorScheme.onSurface
-                                      .withOpacity(0.5),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                              Builder(
+                                builder: (context) {
+                                   final editionMap = {for (var e in allEditionsAsync.value!) e.identifier: e};
+                                   final visibleTranslations = ayahList.first.translations.keys
+                                      .where((k) => editionMap[k]?.type != 'tafsir')
+                                      .toList();
+                                   
+                                   if (visibleTranslations.length == 1) {
+                                      return Text(
+                                        _getEditionName(
+                                          visibleTranslations.first,
+                                          allEditionsAsync.value!,
+                                        ),
+                                        style: textTheme.labelSmall?.copyWith(
+                                          fontSize: 10,
+                                          color: colorScheme.onSurface
+                                              .withOpacity(0.5),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      );
+                                   }
+                                   return const SizedBox.shrink();
+                                }
                               ),
                           ],
                         ),

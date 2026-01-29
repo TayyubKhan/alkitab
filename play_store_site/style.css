@@ -1,0 +1,247 @@
+/* Font Face Definitions */
+@font-face {
+    font-family: 'Lato';
+    src: url('fonts/Lato-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('fonts/Lato-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GT-Super-Text-Book';
+    src: url('fonts/GT-Super-Text-Book.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bg-color: #0A0A0A;
+    --surface-color: #141414;
+    --primary-color: #006400;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0B0B0;
+    --border-color: rgba(255, 255, 255, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Lato', sans-serif;
+    /* Body font from AppTheme */
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    background-color: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    /* Match labelLarge style */
+    transition: color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+/* Main Container */
+.container {
+    max-width: 700px;
+    margin: 80px auto;
+    padding: 0 32px;
+    width: 100%;
+    flex: 1;
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Typography Matches AppTheme */
+h1 {
+    font-family: 'GT-Super-Text-Book', serif;
+    /* Match headlineLarge */
+    font-size: 3rem;
+    /* ~36-48px */
+    font-weight: 400;
+    margin-bottom: 48px;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+h2 {
+    font-family: 'GT-Super-Text-Book', serif;
+    /* Match headlineMedium */
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-top: 56px;
+    margin-bottom: 24px;
+    color: var(--primary-color);
+    letter-spacing: -0.3px;
+}
+
+h3 {
+    font-family: 'GT-Super-Text-Book', serif;
+    /* Match titleLarge */
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+p,
+li {
+    font-family: 'Lato', sans-serif;
+    /* Match bodyLarge */
+    color: var(--text-secondary);
+    /* bodyMedium uses secondary */
+    font-size: 1.05rem;
+    /* ~16px */
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+ul {
+    margin-bottom: 24px;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 12px;
+}
+
+a {
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s;
+}
+
+a:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Premium Card / Disclaimer Box */
+.disclaimer-box {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    padding: 32px;
+    border-radius: 16px;
+    margin: 40px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.disclaimer-box h3 {
+    color: #FFA500;
+    /* Keeping warning color distinct, or could use primary */
+    margin-top: 0;
+    font-size: 1rem;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.disclaimer-box p {
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--text-secondary);
+    font-family: 'Lato', sans-serif;
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    opacity: 0.6;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.4rem;
+    }
+
+    .container {
+        margin: 40px auto;
+        padding: 0 24px;
+    }
+
+    .nav-links {
+        gap: 24px;
+    }
+}
+
+/* Logo Styles */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

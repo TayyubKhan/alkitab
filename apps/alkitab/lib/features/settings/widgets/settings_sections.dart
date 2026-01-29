@@ -10,6 +10,7 @@ import 'package:alkitab/data/models/quran_models.dart';
 import 'package:alkitab/viewmodels/settings_viewmodel.dart';
 import 'font_preview_card.dart';
 import '../screens/storage_management_screen.dart';
+import '../screens/help_screen.dart';
 import 'settings_widgets.dart';
 import 'package:alkitab/core/utils/language_utils.dart'; // Helper for Language Names
 
@@ -262,13 +263,29 @@ class _ContentSectionState extends ConsumerState<ContentSection> {
       return const SizedBox.shrink();
     }
 
-    final activeTranslations = ref.watch(appConfigViewModelProvider
+    final activeIds = ref.watch(appConfigViewModelProvider
         .select((s) => s.activeTranslationIdentifiers));
     final vm = ref.read(appConfigViewModelProvider.notifier);
 
-    // If searching, we simplify or show all.
-    // Showing nested lists in search results is tricky.
-    // We will assume "Translations" and "Tafsir" headers match search.
+    // Calculate counts based on type
+    final transAsync = ref.watch(sortedEditionsProvider('translation'));
+    final tafsirAsync = ref.watch(sortedEditionsProvider('tafsir'));
+
+    int transCount = 0;
+    transAsync.whenData((list) {
+      transCount = list.where((e) => activeIds.contains(e.identifier)).length;
+    });
+
+    int tafsirCount = 0;
+    tafsirAsync.whenData((list) {
+      tafsirCount = list.where((e) => activeIds.contains(e.identifier)).length;
+    });
+
+    // If data is loading, we might show '...' or 0. Since standard prefs has default,
+    // transCount might be at least 1 (Saheeh) if loaded.
+    // We strictly assume if async is loading, count is 0 or retain previous? 
+    // Riverpod keeps previous state by default if using AsyncValue properly, 
+    // but here we init to 0. It's fine for UI flicker.
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +296,7 @@ class _ContentSectionState extends ConsumerState<ContentSection> {
             _SettingTile(
               icon: EvaIcons.globe_outline,
               title: strings.manageTranslations,
-              subtitle: "${activeTranslations.length} active",
+              subtitle: "$transCount active",
               onTap: () => _SectionHelpers.showEditionsSheet(
                 context: context,
                 type: 'translation',
@@ -292,6 +309,7 @@ class _ContentSectionState extends ConsumerState<ContentSection> {
             _SettingTile(
               icon: EvaIcons.book_outline,
               title: strings.manageTafsirs,
+              subtitle: "$tafsirCount active",
               onTap: () => _SectionHelpers.showEditionsSheet(
                 context: context,
                 type: 'tafsir',
@@ -1152,6 +1170,54 @@ class _GoldSlider extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.tertiary)),
+      ],
+    );
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 8. HELP & SUPPORT SECTION
+// -----------------------------------------------------------------------------
+class HelpSection extends ConsumerWidget {
+  const HelpSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final strings = AppLocalizations.of(context)!;
+    if (!_matchesSearch(ref, "Help Support Report Bug Shake")) {
+      return const SizedBox.shrink();
+    }
+
+    final enableShake = ref.watch(
+        appConfigViewModelProvider.select((s) => s.enableShakeToReport));
+    final vm = ref.read(appConfigViewModelProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(title: "Help & Support"),
+        SettingsCard(
+          children: [
+            _SettingTile(
+              icon: EvaIcons.question_mark_circle_outline,
+              title: "Help Center",
+              subtitle: "FAQs and Support",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HelpScreen()),
+                );
+              },
+            ),
+            const _Divider(),
+            _SettingToggle(
+              icon: EvaIcons.shake_outline,
+              title: "Shake to Report",
+              value: enableShake,
+              onChanged: vm.setShakeToReport,
+            ),
+          ],
+        ),
       ],
     );
   }

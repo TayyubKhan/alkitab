@@ -36,40 +36,58 @@ class FeedbackService {
 
   FeedbackService(this._db, this.screenshotController, [this.navigatorKey]);
 
-  void initialize() {
+  void initialize({bool enableShake = true}) {
     // Only enable shake on mobile
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      _shakeDetector = ShakeDetector.autoStart(
-        onPhoneShake: (_) {
-          // Fire and forget async logic
-          () async {
-            final Uint8List? capturedImage = await screenshotController.capture(pixelRatio: 2.0);
-
-            if (navigatorKey?.currentState != null &&
-                navigatorKey!.currentState!.mounted) {
-              final result = await showDialog(
-                context: navigatorKey!.currentState!.context,
-                builder: (context) => const FeedbackDialog(),
-              );
-
-              if (result != null && result is Map) {
-                final desc = result['description'];
-                final cats = result['categories'] as List;
-                captureAndReport(
-                  context: "Shake Report: ${cats.join(', ')}",
-                  extraMessage: desc,
-                  preCapturedImage: capturedImage,
-                );
-              }
-            }
-          }();
-        },
-        minimumShakeCount: 2,
-        shakeSlopTimeMS: 500,
-        shakeCountResetTime: 3000,
-        shakeThresholdGravity: 2.7,
-      );
+      if (enableShake) {
+        _startListening();
+      }
     }
+  }
+
+  void updateShakeListener(bool enabled) {
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      if (enabled) {
+        _startListening();
+      } else {
+        _shakeDetector?.stopListening();
+      }
+    }
+  }
+
+  void _startListening() {
+    _shakeDetector?.stopListening(); // Safety
+    _shakeDetector = ShakeDetector.autoStart(
+      onPhoneShake: (_) {
+        // Fire and forget async logic
+        () async {
+          final Uint8List? capturedImage =
+              await screenshotController.capture(pixelRatio: 2.0);
+
+          if (navigatorKey?.currentState != null &&
+              navigatorKey!.currentState!.mounted) {
+            final result = await showDialog(
+              context: navigatorKey!.currentState!.context,
+              builder: (context) => const FeedbackDialog(),
+            );
+
+            if (result != null && result is Map) {
+              final desc = result['description'];
+              final cats = result['categories'] as List;
+              captureAndReport(
+                context: "Shake Report: ${cats.join(', ')}",
+                extraMessage: desc,
+                preCapturedImage: capturedImage,
+              );
+            }
+          }
+        }();
+      },
+      minimumShakeCount: 2,
+      shakeSlopTimeMS: 500,
+      shakeCountResetTime: 3000,
+      shakeThresholdGravity: 2.7,
+    );
   }
 
   void dispose() {
@@ -143,7 +161,7 @@ ${extraMessage != null ? 'Extra: $extraMessage' : ''}
       final Email email = Email(
         body: body,
         subject: '[Alkitab Support] Report: $context',
-        recipients: ['alikitab.support@gmail.com'],
+        recipients: ['alkitab.help@gmail.com'],
         attachmentPaths: attachments,
         isHTML: false,
       );

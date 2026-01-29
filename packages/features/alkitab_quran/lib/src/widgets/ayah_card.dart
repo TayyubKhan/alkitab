@@ -28,6 +28,7 @@ class AyahRow extends ConsumerStatefulWidget {
   final AyahWithTranslations ayah;
   final Surah surah;
   final Map<String, Edition> editionMap;
+  final void Function(String translation)? onWordTap;
   final void Function(String, BuildContext)? onReportContent;
 
   const AyahRow({
@@ -36,6 +37,7 @@ class AyahRow extends ConsumerStatefulWidget {
     required this.surah,
     required this.editionMap,
     this.onReportContent,
+    this.onWordTap,
   });
 
   @override
@@ -56,54 +58,33 @@ class _AyahRowState extends ConsumerState<AyahRow> {
   }
 
   String _getFontFamily(String arabicFontStyle) {
-    // Force Amiri on all for now to ensure rendering until quranfont is web-ready
-    // Using 'quranfont' (IndoPak) on Web often fails shaping.
-    return 'Amiri';
+    if (arabicFontStyle == 'quranfont') {
+        return 'quranfont'; // IndoPak
+    }
+    return 'Amiri'; // Default/Uthmani
   }
   
   TextStyle _getArabicTextStyle(String fontFamily, double fontSize, Color color) {
-      if (fontFamily == 'Amiri' || fontFamily == 'Uthmani') {
-          if (kIsWeb) {
-             return TextStyle(
-                 fontFamily: 'Amiri',
-                 fontSize: fontSize * 1.1,
-                 color: color,
-                 height: 2.2,
-                 fontWeight: FontWeight.w500,
-                 fontFamilyFallback: const ['NotoNaskhArabic', 'Arial', 'sans-serif'],
-             );
-          }
-          return GoogleFonts.amiri(
-              fontSize: fontSize * 1.1, // Amiri is often small, bump it up
-              color: color,
-              height: 2.2,
-              fontWeight: FontWeight.w500, // Make it a bit bolder
-          ).copyWith(
-               fontFamilyFallback: const ['NotoNaskhArabic', 'Noto Naskh Arabic', 'Simplified Arabic', 'Traditional Arabic', 'Arial', 'sans-serif'],
-          ); 
-      }
+      // Use the actual selected font family
       return TextStyle(
           fontFamily: fontFamily,
           fontSize: fontSize,
           color: color,
-          height: 2.5,
-          fontFamilyFallback: const ['Amiri', 'NotoNaskhArabic', 'Simplified Arabic', 'Arial'],
+          height: (fontFamily == 'quranfont') ? 2.5 : 2.2,
+          fontFamilyFallback: const ['Amiri', 'NotoNaskhArabic', 'Arial'],
       );
   }
 
   void _onWordTap(AyahWord word) {
-    // Show Word Details
-    showDialog(
-      context: context, 
-      builder: (context) => _WordDetailDialog(word: word)
-    );
+    if (widget.onWordTap != null) {
+        widget.onWordTap!(word.translation);
+    }
   }
 
   void _closePopup() {
     if (_focusedWordIndex != null) setState(() => _focusedWordIndex = null);
   }
   
-  // Helper to fix arabic text direction/features if needed
   String _fixArabicText(String text) => text;
 
   @override
@@ -126,15 +107,13 @@ class _AyahRowState extends ConsumerState<AyahRow> {
         ref.watch(appConfigViewModelProvider.select((s) => s.showArabicText));
     final isTranslationOnly = ref
         .watch(appConfigViewModelProvider.select((s) => s.isTranslationOnly));
-    final tafsirFontSize =
-        ref.watch(appConfigViewModelProvider.select((s) => s.tafsirFontSize));
-
+    
     final fontScale = _getFontScale(arabicFontStyle);
     final fontFamily = _getFontFamily(arabicFontStyle);
 
-    final isUrdu = selectedTranslationLanguage == 'ur';
-    final arabicColor = colorScheme.onSurface; // Default to onSurface
-    final translationColor = colorScheme.onSurface;
+    final isUrdu = selectedTranslationLanguage == 'ur' || selectedTranslationLanguage == 'urdu';
+    final arabicColor = Colors.white; // Full white as requested
+    final translationColor = Colors.white; // Full white as requested
     final goldColor = colorScheme.secondary;
     final outlineColor = colorScheme.outline;
 
@@ -148,38 +127,32 @@ class _AyahRowState extends ConsumerState<AyahRow> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isCurrentlyPlaying
               ? goldColor.withOpacity(0.05)
               : Colors.transparent,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start, // Align top for better long content
           children: [
-            AyahActionRail(
-              ayah: widget.ayah,
-              surah: widget.surah,
-              isCurrentlyPlaying: isCurrentlyPlaying,
-              goldColor: goldColor,
-              colorScheme: colorScheme,
-              onReportContent: widget.onReportContent,
+            Padding(
+               padding: const EdgeInsets.only(top: 4.0),
+               child: AyahActionRail(
+                  ayah: widget.ayah,
+                  surah: widget.surah,
+                  isCurrentlyPlaying: isCurrentlyPlaying,
+                  goldColor: goldColor,
+                  colorScheme: colorScheme,
+                  onReportContent: widget.onReportContent,
+                  editionMap: widget.editionMap,
+                ),
             ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                   // LOGGING
-                   Builder(builder: (c) {
-                       // Logging kept as requested
-                       debugPrint("Building Ayah ${widget.ayah.numberInSurah}. Translations Keys: ${widget.ayah.translations.keys}");
-                       // Sanity Check
-                       for(var k in widget.ayah.translations.keys) {
-                           if(widget.ayah.translations[k] == null) debugPrint("CRITICAL: Translation content for $k is NULL");
-                       }
-                       return const SizedBox.shrink(); // Invisible
-                   }),
-
                   const SizedBox(height: 6),
                   if (showArabicText && !isTranslationOnly)
                     if (isDirectWBWEnabled)
@@ -195,80 +168,76 @@ class _AyahRowState extends ConsumerState<AyahRow> {
                     else
                       _buildFlowingContent(context, arabicColor, goldColor,
                           arabicFontSize, fontScale, fontFamily),
-                  const SizedBox(height: 8),
-                  if (widget.ayah.translations.isNotEmpty)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: widget.ayah.translations.entries
-                          .where((e) => widget.editionMap[e.key]?.type != 'tafsir') // Filter out Tafsirs
-                          .map((e) => MapEntry(e.key, e.value)) // Ensure MapEntry type
-                          .map((e) {
+                  
+                  // Translations
+                  if (widget.ayah.translations.isNotEmpty) ...[
+                     const SizedBox(height: 12),
+                     Builder(
+                       builder: (context) {
+                         final visibleTranslations = widget.ayah.translations.entries
+                            .where((e) => widget.editionMap[e.key]?.type != 'tafsir')
+                            .toList();
+                         
+                         return Column(
+                           crossAxisAlignment: CrossAxisAlignment.stretch,
+                           children: visibleTranslations.map((e) {
+                              final edition = widget.editionMap[e.key];
+                              // Check for Roman Urdu (usually has "Roman" in name)
+                              // If it is Roman Urdu, treat as English/LTR even if language code is UR.
+                              final isRomanUrdu = (edition?.englishName.toLowerCase().contains('roman') ?? false) ||
+                                                  (edition?.name.toLowerCase().contains('roman') ?? false);
+                              
+                              final isLineUrdu = !isRomanUrdu && (edition?.language == 'ur' || edition?.language == 'urdu');
+                              
+                              final authorName = edition?.englishName ?? "Translation"; 
+                              final showAuthor = visibleTranslations.length > 1;
 
-                        final edition = widget.editionMap[e.key];
-                        final isLineUrdu = edition?.language == 'ur';
-                        final authorName =
-                            edition?.englishName ?? "Translation";
-                        final showAuthor = widget.ayah.translations.length > 1;
-                        final baseStyle = isLineUrdu
-                          ? textTheme.displayMedium?.copyWith(
-                              fontFamily: 'Gulzar',
-                              fontFamilyFallback: const ['Amiri', 'Arial'],
-                              fontSize: translationFontSize + 2,
-                              color: translationColor.withOpacity(0.95),
-                              height: 2.2, 
-                            )
-                          : textTheme.bodyMedium?.copyWith(
-                              fontSize: translationFontSize,
-                              color: translationColor.withOpacity(0.95),
-                              height: 1.5);
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: e.value),
-                                WidgetSpan(
-                                  alignment: PlaceholderAlignment.middle,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 6.0),
-                                    child: Transform.rotate(
-                                      angle: 0.785, 
-                                      child: Container(
-                                        width: 6,
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                            color: goldColor
-                                                .withOpacity(0.4)),
-                                      ),
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Text.rich(
+                                    TextSpan(
+                                        children: [
+                                            TextSpan(
+                                                text: e.value,
+                                                style: isLineUrdu 
+                                                    ? textTheme.displayMedium?.copyWith(
+                                                        fontFamily: 'Gulzar', 
+                                                        fontFamilyFallback: const ['NotoNastaliqUrdu', 'Arial'],
+                                                        fontSize: translationFontSize + 4,
+                                                        height: 2.0,
+                                                        color: translationColor
+                                                      )
+                                                    : textTheme.bodyMedium?.copyWith(
+                                                        fontSize: translationFontSize,
+                                                        height: 1.6,
+                                                        color: translationColor
+                                                      ),
+                                            ),
+                                            if (showAuthor)
+                                                TextSpan(
+                                                    text: "   ($authorName)",
+                                                    style: textTheme.labelSmall?.copyWith(
+                                                        color: translationColor.withOpacity(0.5),
+                                                        fontFamily: isLineUrdu ? "Gulzar" : null,
+                                                        fontSize: isLineUrdu ? 12 : 10,
+                                                        fontStyle: FontStyle.italic,
+                                                    ),
+                                                ),
+                                        ]
                                     ),
-                                  ),
+                                    textAlign: isLineUrdu ? TextAlign.right : TextAlign.left,
+                                    textDirection: isLineUrdu ? TextDirection.rtl : TextDirection.ltr,
                                 ),
-                                if (showAuthor)
-                                  TextSpan(
-                                    text: " ($authorName)",
-                                    style: baseStyle?.copyWith(
-                                      fontSize: (baseStyle.fontSize ?? 8) * 0.7,
-                                      color:
-                                          translationColor.withOpacity(0.5),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            style: baseStyle,
-                            textAlign:
-                                isLineUrdu ? TextAlign.right : TextAlign.left,
-                            textDirection:
-                                isLineUrdu ? TextDirection.rtl : TextDirection.ltr,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-
+                              );
+                           }).toList(),
+                         );
+                       }
+                     ),
+                  ]
                 ],
               ),
             ),
+
           ],
         ),
       ),
@@ -287,7 +256,7 @@ class _AyahRowState extends ConsumerState<AyahRow> {
       String fontFamily) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double cellWidth = constraints.maxWidth / 3;
+        final double cellWidth = constraints.maxWidth / 3.2; // Slightly smaller to fit more
         final allWords = widget.ayah.words;
         final List<Widget> gridCells = [];
 
@@ -298,10 +267,7 @@ class _AyahRowState extends ConsumerState<AyahRow> {
               _fixArabicText(widget.ayah.arabicText),
               textAlign: TextAlign.right,
               textDirection: TextDirection.rtl,
-              style: _getArabicTextStyle(fontFamily, arabicFontSize * fontScale, textColor)
-                  .copyWith(
-                     letterSpacing: fontFamily == 'quranfont' ? -1.0 : 0.0,
-                  ),
+              style: _getArabicTextStyle(fontFamily, arabicFontSize * fontScale, textColor),
             ),
           );
         }
@@ -309,19 +275,17 @@ class _AyahRowState extends ConsumerState<AyahRow> {
         for (int i = 0; i < allWords.length; i++) {
           final word = allWords[i];
           gridCells.add(_InteractiveDashedGridCell(
-            key: ValueKey(
-                "wbw_${word.wordNumber}_$i"),
+            key: ValueKey("wbw_${word.wordNumber}_$i"),
             word: word,
             width: cellWidth,
             arabicFontSize: arabicFontSize,
             textColor: textColor,
             goldColor: goldColor,
-            dashedColor: outlineColor,
+            dashedColor: outlineColor.withOpacity(0.3),
             scaleFactor: fontScale,
             fontFamily: fontFamily,
             isFocused: _focusedWordIndex == i,
             onTap: () => _onWordTap(word),
-            // The cell builds its own style, ideally we pass style but minimal change here
           ));
         }
 
@@ -329,8 +293,8 @@ class _AyahRowState extends ConsumerState<AyahRow> {
           textDirection: TextDirection.rtl,
           child: Wrap(
             alignment: WrapAlignment.start,
-            runSpacing: 0,
-            spacing: 0,
+            runSpacing: 8,
+            spacing: 8,
             children: gridCells,
           ),
         );
@@ -346,7 +310,6 @@ class _AyahRowState extends ConsumerState<AyahRow> {
       double fontScale,
       String fontFamily) {
     final scaledFontSize = arabicFontSize * fontScale;
-    final activeFontFamily = fontFamily;
     final allWords = widget.ayah.words;
 
     final endSymbolWidget = EndAyahSymbol(
@@ -362,10 +325,7 @@ class _AyahRowState extends ConsumerState<AyahRow> {
           TextSpan(children: [
             TextSpan(
                text: _fixArabicText(widget.ayah.arabicText),
-               style: _getArabicTextStyle(activeFontFamily, scaledFontSize, textColor)
-                   .copyWith(
-                      letterSpacing: activeFontFamily == 'quranfont' ? -1.0 : 0.0,
-                   ),
+               style: _getArabicTextStyle(fontFamily, scaledFontSize, textColor),
             ),
              WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
@@ -387,10 +347,9 @@ class _AyahRowState extends ConsumerState<AyahRow> {
 
     for (int i = 0; i < normalWords.length; i++) {
       wordWidgets.add(_FlowingWord(
-        key: ValueKey(
-            "wbw_flow_${normalWords[i].wordNumber}_$i"),
+        key: ValueKey("wbw_flow_${normalWords[i].wordNumber}_$i"),
         word: normalWords[i],
-        textStyle: _getArabicTextStyle(activeFontFamily, scaledFontSize, textColor),
+        textStyle: _getArabicTextStyle(fontFamily, scaledFontSize, textColor),
         accentColor: goldColor,
         isFocused: _focusedWordIndex == i,
         onTap: () => _onWordTap(normalWords[i]),
@@ -398,10 +357,9 @@ class _AyahRowState extends ConsumerState<AyahRow> {
     }
 
     wordWidgets.add(_FlowingWord(
-      key: ValueKey(
-          "wbw_flow_last_${lastWord.wordNumber}"),
+      key: ValueKey("wbw_flow_last_${lastWord.wordNumber}"),
       word: lastWord,
-      textStyle: _getArabicTextStyle(activeFontFamily, scaledFontSize, textColor),
+      textStyle: _getArabicTextStyle(fontFamily, scaledFontSize, textColor),
       accentColor: goldColor,
       isFocused: _focusedWordIndex == (allWords.length - 1),
       onTap: () => _onWordTap(lastWord),
@@ -416,8 +374,8 @@ class _AyahRowState extends ConsumerState<AyahRow> {
       child: Wrap(
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: 4,
-        spacing: 2,
+        runSpacing: 16, // Increase spacing for better readability
+        spacing: 4,
         children: wordWidgets,
       ),
     );
@@ -430,6 +388,7 @@ class AyahActionRail extends StatelessWidget {
     final bool isCurrentlyPlaying;
     final Color goldColor;
     final ColorScheme colorScheme;
+    final Map<String, Edition> editionMap; 
     final void Function(String, BuildContext)? onReportContent;
 
     const AyahActionRail({
@@ -439,6 +398,7 @@ class AyahActionRail extends StatelessWidget {
         required this.isCurrentlyPlaying,
         required this.goldColor,
         required this.colorScheme,
+        required this.editionMap,
         this.onReportContent,
     });
     
@@ -448,7 +408,7 @@ class AyahActionRail extends StatelessWidget {
             children: [
                 _MinimalIconButton(
                     icon: isCurrentlyPlaying ? EvaIcons.pause_circle_outline : EvaIcons.play_circle_outline,
-                    color: isCurrentlyPlaying ? goldColor : colorScheme.onSurface.withOpacity(0.5),
+                    color: isCurrentlyPlaying ? goldColor : colorScheme.onSurface.withOpacity(0.4),
                     onPressed: () {
                          final container = ProviderScope.containerOf(context);
                          final notifier = container.read(audioControlProvider.notifier);
@@ -459,12 +419,19 @@ class AyahActionRail extends StatelessWidget {
                          }
                     },
                 ),
-                 // Tafsir (Visible only if Tafsir exists)
-                 if (ayah.tafsirs.isNotEmpty)
+                 // Tafsir (Visible if Tafsir exists in separate map OR in translations with type 'tafsir')
+                 if (ayah.tafsirs.isNotEmpty || ayah.translations.keys.any((k) => editionMap[k]?.type == 'tafsir'))
                     _MinimalIconButton(
                         icon: EvaIcons.book_open_outline, // Book for Tafsir
-                        color: colorScheme.onSurface.withOpacity(0.5),
+                        color: colorScheme.onSurface.withOpacity(0.4),
                         onPressed: () {
+                             final combinedTafsirs = <String, String>{...ayah.tafsirs};
+                             for (final entry in ayah.translations.entries) {
+                                  if (editionMap[entry.key]?.type == 'tafsir') {
+                                       combinedTafsirs[entry.key] = entry.value;
+                                  }
+                             }
+
                              showModalBottomSheet(
                                    context: context,
                                    isScrollControlled: true,
@@ -473,13 +440,15 @@ class AyahActionRail extends StatelessWidget {
                                         ayah: ayah,
                                         surah: surah,
                                         titleColor: goldColor,
+                                        explicitTafsirs: combinedTafsirs,
+                                        editionMap: editionMap,
                                    )
                               );
                         },
                     ),
                 _MinimalIconButton(
                     icon: EvaIcons.copy_outline,
-                    color: colorScheme.onSurface.withOpacity(0.5),
+                    color: colorScheme.onSurface.withOpacity(0.4),
                     onPressed: () {
                          Clipboard.setData(ClipboardData(text: "${ayah.arabicText}\n\n${ayah.translations.values.join('\n')}"));
                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Copied to Clipboard")));
@@ -487,7 +456,7 @@ class AyahActionRail extends StatelessWidget {
                 ),
                 _MinimalIconButton(
                     icon: EvaIcons.bulb_outline, // Lightbulb for Research/AI
-                     color: colorScheme.onSurface.withOpacity(0.5),
+                     color: colorScheme.onSurface.withOpacity(0.4),
                      onPressed: () {
                           showModalBottomSheet(
                                context: context,

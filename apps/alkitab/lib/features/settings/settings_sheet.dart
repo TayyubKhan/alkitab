@@ -103,6 +103,8 @@ class _SettingsBottomSheetState extends ConsumerState<SettingsBottomSheet> {
                     AudioSection(),
                     SizedBox(height: 16),
                     DataSection(),
+                    SizedBox(height: 16),
+                    HelpSection(),
 
                     // Minimal Footer
                     SizedBox(height: 32),

@@ -148,7 +148,6 @@ class SurahListScreen extends ConsumerWidget {
                                  surah.name,
                                  style: textTheme.titleLarge?.copyWith(
                                      fontFamily: 'quranfont', // Or generic if not loaded on web?
-                                     // Provide fallback for web in case font fails
                                      fontFamilyFallback: ['Amiri', 'serif'],
                                      color: colorScheme.primary, // Android screenshot shows Black/Dark. User theme uses Primary Green or Text.
                                      // Screenshot shows Black text for Arabic. Surah 1 "Al-Fatihah" text is black.

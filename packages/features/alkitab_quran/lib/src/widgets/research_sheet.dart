@@ -405,9 +405,10 @@ class MessageItemRenderer extends StatelessWidget {
     );
   }
 
+// Text Content
   Widget _renderContent(ResearchContent content) {
     if (content is TextContent) {
-      return Text(content.text, style: const TextStyle(height: 1.6));
+      return Text(content.text, style: const TextStyle(height: 1.6, color: Colors.white)); // Full white
     }
     if (content is GrammarContent) return GrammarCard(data: content);
     if (content is HistoryContent) return HistoryTimelineCard(data: content);
@@ -448,7 +449,7 @@ class _GrammarCardState extends State<GrammarCard> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor),
         ),
-        child: const Text("No grammar analysis available."),
+        child: const Text("No grammar analysis available.", style: TextStyle(color: Colors.white)),
       );
     }
 
@@ -499,7 +500,7 @@ class _GrammarCardState extends State<GrammarCard> {
                     "Word ${_currentIndex + 1} of ${words.length}",
                     style: TextStyle(
                         fontSize: 12,
-                        color: theme.colorScheme.tertiary,
+                        color: theme.colorScheme.tertiary, // Meta info can stay muted or be white
                         fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -545,7 +546,7 @@ class _SingleWordView extends StatelessWidget {
           child: Column(children: [
             Text(word.arabicWord,
                 style:
-                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 4),
             Container(
                 padding:
@@ -555,7 +556,7 @@ class _SingleWordView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12)),
                 child: Text(word.transliteration,
                     style: TextStyle(
-                        color: theme.colorScheme.secondary,
+                        color: theme.colorScheme.secondary, // Transliteration often distinctive, but could be white if requested. Keeping secondary as it's 'meta'.
                         fontSize: 12,
                         fontWeight: FontWeight.bold)))
           ]),
@@ -579,7 +580,7 @@ class _SingleWordView extends StatelessWidget {
                 child: Center(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(word.meaning, textAlign: TextAlign.center),
+                    child: Text(word.meaning, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white)),
                   ),
                 ),
               ),
@@ -608,7 +609,7 @@ class _GridItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(value.isNotEmpty ? value : "-",
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600))
+                      fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white))
             ])));
   }
 }
@@ -639,7 +640,7 @@ class HistoryTimelineCard extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(displayTitle, style: theme.textTheme.labelLarge),
+                      Text(displayTitle, style: theme.textTheme.labelLarge?.copyWith(color: Colors.white)),
                       if (data.era.isNotEmpty)
                         Text(data.era,
                             style: TextStyle(
@@ -666,7 +667,7 @@ class HistoryTimelineCard extends StatelessWidget {
                                         color: theme.colorScheme.secondary),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(child: Text(e))
+                                  Expanded(child: Text(e, style: const TextStyle(color: Colors.white)))
                                 ])))
                         .toList())
                 : Center(
@@ -714,10 +715,10 @@ class InsightCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(displayTitle,
                 style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold))),
+                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white))),
         Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(displayBody, style: const TextStyle(height: 1.5))),
+            child: Text(displayBody, style: const TextStyle(height: 1.5, color: Colors.white))),
       ]),
     );
   }

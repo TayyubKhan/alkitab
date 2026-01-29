@@ -232,6 +232,8 @@ class _ContentSectionState extends ConsumerState<ContentSection> {
           });
         }
       });
+      // Force refresh of downloaded status
+      ref.invalidate(downloadedEditionIdsProvider);
     } catch (_) {
       // generic
     } finally {

@@ -70,7 +70,9 @@ class _QuranAppState extends ConsumerState<QuranApp> {
   void initState() {
     super.initState();
     // Initialize Feedback Service listener
-    ref.read(feedbackServiceProvider).initialize();
+    // Initialize Feedback Service listener
+    final config = ref.read(appConfigViewModelProvider);
+    ref.read(feedbackServiceProvider).initialize(enableShake: config.enableShakeToReport);
   }
 
   @override
@@ -85,6 +87,13 @@ class _QuranAppState extends ConsumerState<QuranApp> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(appConfigViewModelProvider);
+    
+    // Listen for shake setting changes
+    ref.listen(appConfigViewModelProvider.select((s) => s.enableShakeToReport), (prev, next) {
+      if (prev != next) {
+        ref.read(feedbackServiceProvider).updateShakeListener(next);
+      }
+    });
 
     AppLogger.d(
         "Building QuranApp. Theme: ${config.isDarkTheme ? 'Void (Dark)' : 'Clarity (Light)'}");

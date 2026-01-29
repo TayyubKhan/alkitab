@@ -8,7 +8,8 @@ class AppTheme {
   static const _surface = Color(0xFF141414); // Slightly lighter than bg
   static const _textPrimary = Color(0xFFFFFFFF); // White
   static const _textSecondary = Color(0xFFB0B0B0); // Grey
-  static const _primaryGreen = Color(0xFF006400); // Dark Green
+  static const _primaryGreen = Color(0xFF006400); // Dark Green (For Light Mode)
+  static const _primaryGreenDark = Color(0xFF4CAF50); // Brighter Green (For Dark Mode)
 
   // --- LIGHT THEME (Derived or Keep Default) ---
   // Keeping original light theme for fallback, but ideally should match new design language if needed.
@@ -76,10 +77,10 @@ class AppTheme {
     // 1. Color Scheme
     colorScheme: const ColorScheme.dark(
       surface: _surface,
-      primary: _primaryGreen,
-      onPrimary: _textPrimary,
-      secondary: _primaryGreen,
-      onSecondary: _textPrimary, // Gold is darkish? Or maybe Text on Gold. 
+      primary: _primaryGreenDark,
+      onPrimary: _background, // Dark text on bright green? Or White? Usually dark on bright primary is better for contrast but white is safer. Let's stick to black on bright green for "primary" elements.
+      secondary: _primaryGreenDark,
+      onSecondary: _background, 
       // User said: onBackground: textPrimary
       onBackground: _textPrimary,
       // User said: onSurface: textSecondary
@@ -96,12 +97,12 @@ class AppTheme {
     extensions: <ThemeExtension<dynamic>>[
       const QuranColors(
         tajweedRule: Color(0xFFEF5350),
-        juzEndDecoration: _primaryGreen,
-        ayahEndSymbol: _primaryGreen,
+        juzEndDecoration: _primaryGreenDark,
+        ayahEndSymbol: _primaryGreenDark,
         wbwGridBorder: Color(0x33FFFFFF),
         wbwGridBackground: _surface,
         wbwWordText: _textPrimary, // Ensure words are WHITE
-        wbwTranslationText: _primaryGreen,
+        wbwTranslationText: _primaryGreenDark,
       ),
       const QuranDimensions(
         ayahSymbolSize: 32.0,
@@ -149,7 +150,7 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: _primaryGreen,
+        backgroundColor: _primaryGreenDark,
         foregroundColor: _textPrimary,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -159,7 +160,7 @@ class AppTheme {
 
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: _primaryGreen,
+        foregroundColor: _primaryGreenDark,
         side: const BorderSide(color: Color(0x33FFFFFF)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -167,13 +168,13 @@ class AppTheme {
     ),
 
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: _primaryGreen,
+      backgroundColor: _primaryGreenDark,
       foregroundColor: _textPrimary,
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _background,
-      selectedItemColor: _primaryGreen,
+      selectedItemColor: _primaryGreenDark,
       unselectedItemColor: _textSecondary,
       type: BottomNavigationBarType.fixed,
     ),
@@ -192,7 +193,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: _primaryGreen),
+        borderSide: const BorderSide(color: _primaryGreenDark),
       ),
       hintStyle: TextStyle(color: _textSecondary.withValues(alpha: 0.7)),
     ),

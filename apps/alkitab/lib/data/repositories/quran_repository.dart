@@ -76,6 +76,15 @@ List<TranslationsCompanion> _parseV4Tafsir(Map<String, dynamic> args) {
 
   final jsonMap = jsonDecode(body) as Map<String, dynamic>;
   final list = jsonMap['tafsirs'] as List<dynamic>;
+  
+  // Log raw count (need to use print or send back to isolate port if logger not available in isolate, 
+  // but AppLogger might work if it's just printing to stdout. 
+  // Isolate parsers usually shouldn't depend on complex static logger, but let's try or just rely on the batch size returned).
+  // Actually, we can just return the count? No, signature fixed.
+  // Let's assume the batch length log in Repo is sufficient for now, 
+  // but adding a print might help if we see stdout.
+  // print("Parser: Received ${list.length} raw items");
+  
   final batch = <TranslationsCompanion>[];
 
   for (final item in list) {
@@ -736,26 +745,38 @@ class MobileQuranRepository implements core.QuranRepository {
           // Note: The base URL usually ends with /api/v4, so we construct carefully.
           // _baseUrl is 'https://api.quran.com/api/v4'
 
-          final url = '$_baseUrl/tafsirs/$apiId/by_chapter/$surahNum';
-          AppLogger.d(
-              "Repo: Downloading V4 Tafsir $apiId for Surah $surahNum...");
+          // Use 300 to cover longest Surah (286 verses)
+          final url = '$_baseUrl/tafsirs/$apiId/by_chapter/$surahNum?per_page=300';
+          
+          AppLogger.d("Repo: [Start] Surah $surahNum - Requesting URL: $url");
 
           try {
             final resp = await _getWithRetry(url);
+            AppLogger.d("Repo: [Net] Surah $surahNum - Status: ${resp.statusCode}, BodyLen: ${resp.body.length}");
+
             final List<TranslationsCompanion> batch = await compute(
                 _parseV4Tafsir, {'body': resp.body, 'editionId': customId});
+            
+            AppLogger.d("Repo: [Parse] Surah $surahNum - Parsed ${batch.length} verses");
 
             if (batch.isNotEmpty) {
+              // Delete existing entries for this Surah/Edition to prevent duplicates
+              final deleted = await (_db.delete(_db.translations)
+                    ..where((t) => t.surahNumber.equals(surahNum) &
+                        t.edition.equals(customId)))
+                  .go();
+              
+              if (deleted > 0) {
+                 AppLogger.d("Repo: [DB] Surah $surahNum - Cleared $deleted existing records");
+              }
+
               await _db.addTranslations(batch);
-              AppLogger.d(
-                  "Repo: Saved ${batch.length} tafsir verses for Surah $surahNum");
+              AppLogger.d("Repo: [DB] Surah $surahNum - Inserted ${batch.length} records. [Success]");
             } else {
-              AppLogger.w(
-                  "Repo: Empty V4 tafsir batch for Surah $surahNum - $url");
+              AppLogger.w("Repo: [Warn] Surah $surahNum - Empty batch parsed! Response body: ${resp.body.substring(0, resp.body.length > 100 ? 100 : resp.body.length)}");
             }
-          } catch (e) {
-            AppLogger.e(
-                "Repo: Failed Surah $surahNum for Tafsir $apiId (V4) - $e");
+          } catch (e, stack) {
+            AppLogger.e("Repo: [Error] Surah $surahNum Failed - $e", stack);
           }
         } else {
           // --- V3 TRANSLATION LOGIC (Existing) ---
@@ -904,12 +925,11 @@ class MobileQuranRepository implements core.QuranRepository {
     return identifier;
   }
 
-  Future<bool> isBaseDataDownloaded() async {
-    final prefCheck = _prefs.getBool(_kBaseDataDownloadedKey) ?? false;
-    if (prefCheck) return await _db.isBaseDataDownloaded();
-    return false;
-  }
-
+  // Future<bool> isBaseDataDownloaded() async {
+  //   final prefCheck = _prefs.getBool(_kBaseDataDownloadedKey) ?? false;
+  //   if (prefCheck) return await _db.isBaseDataDownloaded();
+  //   return false;
+  // }
   Future<void> _markBaseDataAsDownloaded() async {
     await _prefs.setBool(_kBaseDataDownloadedKey, true);
   }

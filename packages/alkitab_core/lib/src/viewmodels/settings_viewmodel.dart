@@ -25,10 +25,11 @@ class AppConfigState {
   final bool isDirectWBWEnabled;
   final String wbwLanguage;
   final String aiPreference;
+  final bool enableShakeToReport;
 
   const AppConfigState({
     this.isDarkTheme = true,
-    this.arabicFontSize = 28.0,
+    this.arabicFontSize = 20.0,
     this.translationFontSize = 16.0,
     this.playbackSpeed = 1.0,
     this.selectedReciterIdentifier = '7', // Mishary
@@ -41,6 +42,7 @@ class AppConfigState {
     this.isDirectWBWEnabled = false,
     this.wbwLanguage = 'en',
     this.aiPreference = 'disabled',
+    this.enableShakeToReport = true,
   });
 
   bool get isTranslationOnly => !showArabicText;
@@ -62,6 +64,7 @@ class AppConfigState {
     String? wbwLanguage,
     String? aiPreference,
     Set<String>? fullEditions, // Compatibility
+    bool? enableShakeToReport,
   }) {
     return AppConfigState(
       isDarkTheme: isDarkTheme ?? this.isDarkTheme,
@@ -81,6 +84,7 @@ class AppConfigState {
       isDirectWBWEnabled: isDirectWBWEnabled ?? this.isDirectWBWEnabled,
       wbwLanguage: wbwLanguage ?? this.wbwLanguage,
       aiPreference: aiPreference ?? this.aiPreference,
+      enableShakeToReport: enableShakeToReport ?? this.enableShakeToReport,
     );
   }
 }
@@ -106,6 +110,7 @@ class AppConfigViewModel extends Notifier<AppConfigState> {
   static const _kDirectWbwKey = 'direct_wbw_enabled';
   static const _kWbwLangKey = 'wbw_language';
   static const _kAiKey = 'ai_preference';
+  static const _kShakeRepoKey = 'shake_to_report_enabled';
 
 
   @override
@@ -118,7 +123,7 @@ class AppConfigViewModel extends Notifier<AppConfigState> {
     _prefs = await SharedPreferences.getInstance();
     
     final isDark = _prefs.getBool(_kThemeKey) ?? true;
-    final arSize = _prefs.getDouble(_kArabicSizeKey) ?? 28.0;
+    final arSize = _prefs.getDouble(_kArabicSizeKey) ?? 20.0;
     final trSize = _prefs.getDouble(_kTransSizeKey) ?? 16.0;
     final speed = _prefs.getDouble(_kSpeedKey) ?? 1.0;
     final reciter = _prefs.getString(_kReciterKey) ?? '7';
@@ -132,6 +137,7 @@ class AppConfigViewModel extends Notifier<AppConfigState> {
     final directWbw = _prefs.getBool(_kDirectWbwKey) ?? false;
     final wbwLang = _prefs.getString(_kWbwLangKey) ?? 'en';
     final ai = _prefs.getString(_kAiKey) ?? 'disabled';
+    final shake = _prefs.getBool(_kShakeRepoKey) ?? true;
 
     state = AppConfigState(
       isDarkTheme: isDark,
@@ -148,6 +154,7 @@ class AppConfigViewModel extends Notifier<AppConfigState> {
       isDirectWBWEnabled: directWbw,
       wbwLanguage: wbwLang,
       aiPreference: ai,
+      enableShakeToReport: shake,
     );
   }
 
@@ -232,6 +239,11 @@ class AppConfigViewModel extends Notifier<AppConfigState> {
   void setAiPreference(String pref) {
       state = state.copyWith(aiPreference: pref);
       _prefs.setString(_kAiKey, pref);
+  }
+
+  void setShakeToReport(bool enabled) {
+    state = state.copyWith(enableShakeToReport: enabled);
+    _prefs.setBool(_kShakeRepoKey, enabled);
   }
   
   Future<void> clearCache() async {

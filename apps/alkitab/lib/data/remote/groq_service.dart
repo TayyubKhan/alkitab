@@ -11,7 +11,7 @@ class GroqService {
   // TODO: REPLACE THIS WITH YOUR VALID API KEY IF NOT USING ENV VARS
   static const String _defaultKey = '';
 
-  static const String _modelId = 'llama3-70b-8192';
+  static const String _modelId = 'llama-3.3-70b-versatile';
 
   GroqService() {
     _currentKey = _apiKeyEnv.isNotEmpty ? _apiKeyEnv : _defaultKey;

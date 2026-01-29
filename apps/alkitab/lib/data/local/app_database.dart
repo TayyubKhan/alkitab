@@ -249,11 +249,27 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<bool> isEditionDownloaded(String id) async {
-    // 6000 is an approximation of total verses (min threshold)
-    final c = await (select(translations)..where((t) => t.edition.equals(id)))
+    // Optimized: Use COUNT(*) instead of fetching all rows
+    final countExp = translations.id.count();
+    final count = await (selectOnly(translations)..addColumns([countExp])
+          ..where(translations.edition.equals(id)))
+        .map((row) => row.read(countExp))
+        .getSingle();
+
+    if (count != null && count > 6000) return true;
+
+    // Optimized: Check unique surahs using DISTINCT query
+    // Relaxed to >= 110 to handle sparse Tafsirs
+    final surahNumExp = translations.surahNumber;
+    final surahsCount = await (selectOnly(translations, distinct: true)
+          ..addColumns([surahNumExp])
+          ..where(translations.edition.equals(id)))
         .get()
-        .then((v) => v.length);
-    return c > 6000;
+        .then((rows) => rows.length);
+
+    // AppLogger.d("DB: $id has $surahsCount unique surahs.");
+    
+    return surahsCount >= 110;
   }
 
   Future<bool> isWbWEditionDownloaded(String id) async {
