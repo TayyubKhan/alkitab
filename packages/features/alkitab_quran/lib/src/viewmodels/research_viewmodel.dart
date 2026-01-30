@@ -34,10 +34,7 @@ class ResearchNotifier extends _$ResearchNotifier {
     required Surah surah,
     String mode = 'text',
   }) async {
-    final userMsg = ResearchMessage(
-      isUser: true,
-      content: TextContent(query),
-    );
+    final userMsg = ResearchMessage(isUser: true, content: TextContent(query));
 
     final aiMsg = ResearchMessage(
       isUser: false,
@@ -52,56 +49,64 @@ class ResearchNotifier extends _$ResearchNotifier {
     final buffer = StringBuffer();
 
     await _subscription?.cancel();
-    _subscription = groq.streamContent(prompt).listen(
-      (chunk) {
-        buffer.write(chunk);
-        if (mode == 'text') {
-          _updateLastMessage(
-            TextContent(buffer.toString()),
-            isTyping: true,
-          );
-        }
-      },
-      onDone: () {
-        final fullText = buffer.toString();
+    _subscription = groq
+        .streamContent(prompt)
+        .listen(
+          (chunk) {
+            buffer.write(chunk);
+            if (mode == 'text') {
+              _updateLastMessage(
+                TextContent(buffer.toString()),
+                isTyping: true,
+              );
+            }
+          },
+          onDone: () {
+            final fullText = buffer.toString();
 
-        if (mode == 'text') {
-          _updateLastMessage(
-            TextContent(fullText),
-            isTyping: false,
-          );
-          return;
-        }
+            if (mode == 'text') {
+              _updateLastMessage(TextContent(fullText), isTyping: false);
+              return;
+            }
 
-        try {
-          // Clean markdown code blocks if present (e.g., ```json ... ```)
-          final cleanJson =
-              fullText.replaceAll(RegExp(r'^```json\s*|\s*```$'), '').trim();
+            try {
+              // Improved Regex to catch JSON even if surrounded by text
+              final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(fullText);
+              if (jsonMatch == null) throw FormatException("No JSON found");
 
-          final Map<String, dynamic> data = jsonDecode(cleanJson);
-          final content = ResearchContent.fromJson(data);
+              final cleanJson = jsonMatch.group(0)!;
+              final Map<String, dynamic> data = jsonDecode(cleanJson);
 
-          _updateLastMessage(content, isTyping: false);
-        } catch (_) {
-          _updateLastMessage(
-            TextContent('Could not parse response:\n\n$fullText'),
-            isTyping: false,
-          );
-        }
-      },
-      onError: (err) {
-        _updateLastMessage(
-          TextContent('AI error: $err'),
-          isTyping: false,
+              // Freezed requires 'runtimeType', but LLM gives 'type'. Map it:
+              if (data.containsKey('type')) {
+                String type = (data['type'] as String).toLowerCase();
+                // Handle common AI hallucinations/synonyms
+                if (type == 'revelation') type = 'history';
+                if (type == 'reflection') type = 'insight';
+
+                data['runtimeType'] = type;
+              }
+
+              final content = ResearchContent.fromJson(data);
+
+              _updateLastMessage(content, isTyping: false);
+            } catch (e) {
+              // TEMPORARY DEBUG PRINT
+              print("DEBUG_TEST_EXCEPTION: $e");
+              AppLogger.e("Parsing Error: $e");
+              _updateLastMessage(
+                TextContent('Could not parse response:\n\n$fullText'),
+                isTyping: false,
+              );
+            }
+          },
+          onError: (err) {
+            _updateLastMessage(TextContent('AI error: $err'), isTyping: false);
+          },
         );
-      },
-    );
   }
 
-  void _updateLastMessage(
-    ResearchContent content, {
-    required bool isTyping,
-  }) {
+  void _updateLastMessage(ResearchContent content, {required bool isTyping}) {
     if (state.isEmpty) return;
 
     final updated = [...state];
@@ -123,7 +128,8 @@ class ResearchNotifier extends _$ResearchNotifier {
     AyahWithTranslations ayah,
     Surah surah,
   ) {
-    final context = 'Surah ${surah.englishName} (${surah.number}), '
+    final context =
+        'Surah ${surah.englishName} (${surah.number}), '
         'Ayah ${ayah.numberInSurah}. '
         'Arabic: ${ayah.arabicText}.';
 
@@ -202,4 +208,3 @@ Answer concisely.
     _subscription?.cancel();
   }
 }
-

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:alkitab_models/alkitab_models.dart';
 
 import '../abstractions/quran_repository.dart';
 

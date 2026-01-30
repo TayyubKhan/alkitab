@@ -55,7 +55,9 @@ class _ResearchSheetState extends ConsumerState<ResearchSheet> {
       if (mode == 'insight') finalQuery = "Give me a practical reflection.";
     }
 
-    ref.read(researchProvider(_sessionKey).notifier).sendQuery(
+    ref
+        .read(researchProvider(_sessionKey).notifier)
+        .sendQuery(
           query: finalQuery,
           ayah: widget.ayah,
           surah: widget.surah,
@@ -105,7 +107,8 @@ class _ResearchSheetState extends ConsumerState<ResearchSheet> {
                       return MessageItemRenderer(
                         message: messages[index],
                         onReport: widget.onReportContent != null
-                            ? (content) => widget.onReportContent!(content, context)
+                            ? (content) =>
+                                  widget.onReportContent!(content, context)
                             : null,
                       );
                     },
@@ -133,11 +136,7 @@ class ResearchHeader extends StatelessWidget {
   final Surah surah;
   final AyahWithTranslations ayah;
 
-  const ResearchHeader({
-    super.key,
-    required this.surah,
-    required this.ayah,
-  });
+  const ResearchHeader({super.key, required this.surah, required this.ayah});
 
   @override
   Widget build(BuildContext context) {
@@ -151,28 +150,35 @@ class ResearchHeader extends StatelessWidget {
       child: Column(
         children: [
           Container(
-              width: 32,
-              height: 4,
-              decoration: BoxDecoration(
-                  color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2))),
+            width: 32,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.auto_awesome,
-                  color: theme.colorScheme.secondary, size: 16),
+              Icon(
+                Icons.auto_awesome,
+                color: theme.colorScheme.secondary,
+                size: 16,
+              ),
               const SizedBox(width: 8),
-              Text("AI Research",
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(letterSpacing: 1.0)),
+              Text(
+                "AI Research",
+                style: theme.textTheme.labelLarge?.copyWith(letterSpacing: 1.0),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
             "Surah ${surah.englishName} : ${ayah.numberInSurah}",
-            style: theme.textTheme.labelSmall
-                ?.copyWith(color: theme.colorScheme.tertiary),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.tertiary,
+            ),
           ),
         ],
       ),
@@ -210,19 +216,22 @@ class ResearchInputArea extends StatelessWidget {
                 child: Row(
                   children: [
                     _ActionChip(
-                        label: "Grammar",
-                        icon: Icons.spellcheck,
-                        onTap: () => onSend('grammar')),
+                      label: "Grammar",
+                      icon: Icons.spellcheck,
+                      onTap: () => onSend('grammar'),
+                    ),
                     const SizedBox(width: 8),
                     _ActionChip(
-                        label: "History",
-                        icon: Icons.history_edu,
-                        onTap: () => onSend('history')),
+                      label: "History",
+                      icon: Icons.history_edu,
+                      onTap: () => onSend('history'),
+                    ),
                     const SizedBox(width: 8),
                     _ActionChip(
-                        label: "Reflect",
-                        icon: Icons.light_mode,
-                        onTap: () => onSend('insight')),
+                      label: "Reflect",
+                      icon: Icons.light_mode,
+                      onTap: () => onSend('insight'),
+                    ),
                   ],
                 ),
               ),
@@ -240,21 +249,27 @@ class ResearchInputArea extends StatelessWidget {
                       child: Row(
                         children: [
                           const SizedBox(width: 16),
-                          Icon(Icons.mic,
-                              size: 20, color: theme.colorScheme.tertiary),
+                          Icon(
+                            Icons.mic,
+                            size: 20,
+                            color: theme.colorScheme.tertiary,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: TextField(
                               controller: controller,
-                              style:
-                                  TextStyle(color: theme.colorScheme.onSurface),
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
+                              ),
                               decoration: InputDecoration(
                                 hintText: "Ask AI...",
                                 hintStyle: TextStyle(
-                                    color: theme.colorScheme.tertiary),
+                                  color: theme.colorScheme.tertiary,
+                                ),
                                 border: InputBorder.none,
-                                contentPadding:
-                                    const EdgeInsets.only(bottom: 4),
+                                contentPadding: const EdgeInsets.only(
+                                  bottom: 4,
+                                ),
                               ),
                               onSubmitted: (_) => onSend('text'),
                             ),
@@ -269,10 +284,12 @@ class ResearchInputArea extends StatelessWidget {
                     child: CircleAvatar(
                       radius: 24,
                       backgroundColor: theme.colorScheme.secondary,
-                      child: Icon(Icons.arrow_upward,
-                          color: theme.colorScheme.onSecondary),
+                      child: Icon(
+                        Icons.arrow_upward,
+                        color: theme.colorScheme.onSecondary,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
@@ -287,8 +304,11 @@ class _ActionChip extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
-  const _ActionChip(
-      {required this.label, required this.icon, required this.onTap});
+  const _ActionChip({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -303,16 +323,23 @@ class _ActionChip extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: theme.colorScheme.outline)),
-            child: Row(children: [
-              Icon(icon, size: 14, color: theme.colorScheme.secondary),
-              const SizedBox(width: 6),
-              Text(label,
+              color: theme.colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: theme.colorScheme.outline),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 14, color: theme.colorScheme.secondary),
+                const SizedBox(width: 6),
+                Text(
+                  label,
                   style: TextStyle(
-                      fontSize: 12, color: theme.colorScheme.onSurface))
-            ]),
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -335,19 +362,23 @@ class MessageItemRenderer extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 24),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-              color: theme.colorScheme.secondary,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(4),
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
+            color: theme.colorScheme.secondary,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(4),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+          ),
           child: Text(
-              (message.content is TextContent)
-                  ? (message.content as TextContent).text
-                  : "...",
-              style: TextStyle(
-                  color: theme.colorScheme.onSecondary,
-                  fontWeight: FontWeight.w600)),
+            (message.content is TextContent)
+                ? (message.content as TextContent).text
+                : "...",
+            style: TextStyle(
+              color: theme.colorScheme.onSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       );
     }
@@ -357,10 +388,14 @@ class MessageItemRenderer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-              radius: 14,
-              backgroundColor: theme.colorScheme.surface,
-              child: Icon(Icons.auto_awesome,
-                  size: 16, color: theme.colorScheme.secondary)),
+            radius: 14,
+            backgroundColor: theme.colorScheme.surface,
+            child: Icon(
+              Icons.auto_awesome,
+              size: 16,
+              color: theme.colorScheme.secondary,
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -369,21 +404,31 @@ class MessageItemRenderer extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("AI ASSISTANT",
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(fontSize: 10, letterSpacing: 1.5)),
+                    Text(
+                      "AI ASSISTANT",
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontSize: 10,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
                     // REPORT BUTTON
                     if (onReport != null)
                       InkWell(
                         onTap: () {
                           // Trigger Report
-                          onReport?.call(message.content is TextContent
-                              ? (message.content as TextContent).text
-                              : "Reporting non-text content");
+                          onReport?.call(
+                            message.content is TextContent
+                                ? (message.content as TextContent).text
+                                : "Reporting non-text content",
+                          );
                         },
-                        child: Icon(Icons.flag_outlined,
-                            size: 14,
-                            color: theme.colorScheme.tertiary.withValues(alpha: 0.5)),
+                        child: Icon(
+                          Icons.flag_outlined,
+                          size: 14,
+                          color: theme.colorScheme.tertiary.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
                       ),
                   ],
                 ),
@@ -391,10 +436,13 @@ class MessageItemRenderer extends StatelessWidget {
                 if (message.isTyping &&
                     message.content is TextContent &&
                     (message.content as TextContent).text == "...")
-                  Text("Thinking...",
-                      style: TextStyle(
-                          color: theme.colorScheme.tertiary,
-                          fontStyle: FontStyle.italic))
+                  Text(
+                    "Thinking...",
+                    style: TextStyle(
+                      color: theme.colorScheme.tertiary,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  )
                 else
                   _renderContent(message.content),
               ],
@@ -405,10 +453,13 @@ class MessageItemRenderer extends StatelessWidget {
     );
   }
 
-// Text Content
+  // Text Content
   Widget _renderContent(ResearchContent content) {
     if (content is TextContent) {
-      return Text(content.text, style: const TextStyle(height: 1.6, color: Colors.white)); // Full white
+      return Text(
+        content.text,
+        style: const TextStyle(height: 1.6, color: Colors.white),
+      ); // Full white
     }
     if (content is GrammarContent) return GrammarCard(data: content);
     if (content is HistoryContent) return HistoryTimelineCard(data: content);
@@ -449,7 +500,10 @@ class _GrammarCardState extends State<GrammarCard> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor),
         ),
-        child: const Text("No grammar analysis available.", style: TextStyle(color: Colors.white)),
+        child: const Text(
+          "No grammar analysis available.",
+          style: TextStyle(color: Colors.white),
+        ),
       );
     }
 
@@ -462,7 +516,7 @@ class _GrammarCardState extends State<GrammarCard> {
       child: Column(
         children: [
           SizedBox(
-            height: 320,
+            height: 380, // Increased height for better scrolling
             child: PageView.builder(
               controller: _pageController,
               itemCount: words.length,
@@ -477,16 +531,22 @@ class _GrammarCardState extends State<GrammarCard> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: borderColor)),
-                color: theme.colorScheme.surfaceContainer.withValues(alpha: 0.5),
-                borderRadius:
-                    const BorderRadius.vertical(bottom: Radius.circular(16)),
+                color: theme.colorScheme.surfaceContainer.withValues(
+                  alpha: 0.5,
+                ),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(16),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back_ios,
-                        size: 14, color: theme.colorScheme.tertiary),
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      size: 14,
+                      color: theme.colorScheme.tertiary,
+                    ),
                     onPressed: _currentIndex > 0
                         ? () {
                             _pageController.previousPage(
@@ -499,13 +559,19 @@ class _GrammarCardState extends State<GrammarCard> {
                   Text(
                     "Word ${_currentIndex + 1} of ${words.length}",
                     style: TextStyle(
-                        fontSize: 12,
-                        color: theme.colorScheme.tertiary, // Meta info can stay muted or be white
-                        fontWeight: FontWeight.bold),
+                      fontSize: 12,
+                      color: theme
+                          .colorScheme
+                          .tertiary, // Meta info can stay muted or be white
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.arrow_forward_ios,
-                        size: 14, color: theme.colorScheme.tertiary),
+                    icon: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 14,
+                      color: theme.colorScheme.tertiary,
+                    ),
                     onPressed: _currentIndex < words.length - 1
                         ? () {
                             _pageController.nextPage(
@@ -537,50 +603,84 @@ class _SingleWordView extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16), // Reduced padding
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: borderColor)),
             color: theme.colorScheme.surfaceContainer,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           ),
-          child: Column(children: [
-            Text(word.arabicWord,
-                style:
-                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 4),
-            Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: Column(
+            children: [
+              Text(
+                word.arabicWord,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ), // Reduced font size
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                    color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12)),
-                child: Text(word.transliteration,
-                    style: TextStyle(
-                        color: theme.colorScheme.secondary, // Transliteration often distinctive, but could be white if requested. Keeping secondary as it's 'meta'.
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)))
-          ]),
+                  color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  word.transliteration,
+                  style: TextStyle(
+                    color: theme.colorScheme.secondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: Column(
             children: [
-              Row(children: [
-                _GridItem("ROOT", word.root),
-                Container(width: 1, height: 60, color: borderColor),
-                _GridItem("FORM", word.form)
-              ]),
+              Row(
+                children: [
+                  _GridItem("ROOT", word.root),
+                  Container(
+                    width: 1,
+                    height: 50,
+                    color: borderColor,
+                  ), // Reduced height
+                  _GridItem("FORM", word.form),
+                ],
+              ),
               Divider(height: 1, color: borderColor),
-              Row(children: [
-                _GridItem("TENSE", word.tense),
-                Container(width: 1, height: 60, color: borderColor),
-                _GridItem("MOOD", word.mood)
-              ]),
+              Row(
+                children: [
+                  _GridItem("TENSE", word.tense),
+                  Container(
+                    width: 1,
+                    height: 50,
+                    color: borderColor,
+                  ), // Reduced height
+                  _GridItem("MOOD", word.mood),
+                ],
+              ),
               Divider(height: 1, color: borderColor),
               Expanded(
                 child: Center(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(word.meaning, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white)),
+                    child: Text(
+                      word.meaning,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                    ), // Adjusted style
                   ),
                 ),
               ),
@@ -599,18 +699,33 @@ class _GridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(children: [
-              Text(label,
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: Theme.of(context).colorScheme.tertiary)),
-              const SizedBox(height: 4),
-              Text(value.isNotEmpty ? value : "-",
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white))
-            ])));
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+          vertical: 10.0,
+        ), // Reduced vertical padding
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value.isNotEmpty ? value : "-",
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ), // Adjusted font size
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -620,64 +735,99 @@ class HistoryTimelineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final displayTitle =
-        data.title.trim().isEmpty ? 'Historical Context' : data.title;
+    final displayTitle = data.title.trim().isEmpty
+        ? 'Historical Context'
+        : data.title;
     final hasEvents = data.events.isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.outline)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Row(children: [
-              Icon(Icons.history_edu,
-                  color: theme.colorScheme.secondary, size: 20),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
+            child: Row(
+              children: [
+                Icon(
+                  Icons.history_edu,
+                  color: theme.colorScheme.secondary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(displayTitle, style: theme.textTheme.labelLarge?.copyWith(color: Colors.white)),
+                      Text(
+                        displayTitle,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
                       if (data.era.isNotEmpty)
-                        Text(data.era,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: theme.colorScheme.tertiary))
-                    ]),
-              )
-            ])),
-        Divider(height: 1, color: theme.colorScheme.outline),
-        Padding(
+                        Text(
+                          data.era,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: theme.colorScheme.tertiary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: theme.colorScheme.outline),
+          Padding(
             padding: const EdgeInsets.all(20.0),
             child: hasEvents
                 ? Column(
                     children: data.events
-                        .map((e) => Padding(
+                        .map(
+                          (e) => Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    child: Icon(Icons.circle,
-                                        size: 6,
-                                        color: theme.colorScheme.secondary),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  child: Icon(
+                                    Icons.circle,
+                                    size: 6,
+                                    color: theme.colorScheme.secondary,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(e, style: const TextStyle(color: Colors.white)))
-                                ])))
-                        .toList())
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    e,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  )
                 : Center(
                     child: Text(
-                    "No specific historical events found for this context.",
-                    style: TextStyle(
+                      "No specific historical events found for this context.",
+                      style: TextStyle(
                         color: theme.colorScheme.tertiary,
-                        fontStyle: FontStyle.italic),
-                  ))),
-      ]),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -695,31 +845,54 @@ class InsightCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.outline)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.outline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Row(children: [
-              Icon(Icons.light_mode,
-                  color: theme.colorScheme.secondary, size: 20),
-              const SizedBox(width: 12),
-              Text("INSIGHT",
+            child: Row(
+              children: [
+                Icon(
+                  Icons.light_mode,
+                  color: theme.colorScheme.secondary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  "INSIGHT",
                   style: TextStyle(
-                      color: theme.colorScheme.secondary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10))
-            ])),
-        Padding(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(displayTitle,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white))),
-        Padding(
+            child: Text(
+              displayTitle,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(displayBody, style: const TextStyle(height: 1.5, color: Colors.white))),
-      ]),
+            child: Text(
+              displayBody,
+              style: const TextStyle(height: 1.5, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
